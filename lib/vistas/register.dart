@@ -1,12 +1,7 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_import
 
-import 'package:event_search/vistas/mainScreen.dart';
-import 'package:event_search/vistas/register.dart';
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const MyApp());
-}
+import 'package:event_search/vistas/login.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -16,23 +11,24 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Event Search',
-      home: const MyHomePage(),
+      title: 'Aplicación',
+      home: const RegisterPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _RegisterPageState extends State<RegisterPage> {
 
   TextEditingController userController = TextEditingController();
   TextEditingController passController = TextEditingController();
+  TextEditingController passConfirmController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -45,14 +41,17 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView(
           children:[
             Padding(
-              padding: const EdgeInsets.only(top: 375.0),
+              padding: const EdgeInsets.only(top: 300.0),
               child: Wrap(
                 runSpacing: 10,
                 children: [
+                  textoCabecera("Escriba un nombre de usuario:", MediaQuery.of(context).size.width),
                   textUser(),
+                  textoCabecera("Escriba su contraseña:", MediaQuery.of(context).size.width),
                   textPass(),
-                  botonLogin(),
-                  botonRegister()
+                  textoCabecera("Repita de nuevo la contraseña:", MediaQuery.of(context).size.width),
+                  textPassConfirm(),
+                  botonCreate()
                 ],
               ),
             ),
@@ -95,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
   }
 
-    Widget textPass() {
+  Widget textPass() {
     return
       Center(
         child: Container(
@@ -128,64 +127,49 @@ class _MyHomePageState extends State<MyHomePage> {
       );
   }
 
-  Widget botonLogin(){
-    return Center(
-      child: ElevatedButton(
-        onPressed:()
-        {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context)=> MainPage()
-            )
-            
-          );
-          
-          //print("Pulsado"); //Una chuletilla
-          //print(controlador1.text);
-          //print(controlador2.text);
-          //print(grupo_radio1.toString());
-          setState(() {
-            
-            //if(grupo_radio1.toString() == "1"){
-            //  resultado = (int.parse(controlador1.text)+int.parse(controlador2.text));
-            //}
-          });
-
-        },
-        style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.yellow.shade700),
-            maximumSize:
-            MaterialStateProperty.all(const Size(250.0, 100.0))),
-        child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Icon(
-                    Icons.login,
-                    size: 20,
-                  ),
-                  Text("Iniciar sesión")
-                ]
-            )
-        )
-      ),
-    );
+  Widget textPassConfirm() {
+    return
+      Center(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Color(0x44000000),//color transparente
+            border: Border.all(color: Colors.white),
+            borderRadius: BorderRadius.all(Radius.circular(10.0))
+          ),
+          width: 250.0,
+          child:
+          TextField(
+            controller: passConfirmController,
+            //autofocus: true, //Lo comentamos porque no queremos que se haga el focus al arrancar ejecutar la app
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.send,  // icono del botón
+            autocorrect: false,
+            textAlign: TextAlign.center,
+            obscureText: true, // password
+            style: TextStyle(
+                color: Colors.white
+            ),
+            decoration: InputDecoration(
+              //icon: Icon(Icons.three_g_mobiledata_outlined),
+              prefixIcon: Icon(Icons.password, color: Colors.grey,),
+              hintText: "Confirmar contraseña",
+              hintStyle:TextStyle(color: Colors.grey),
+            ),
+          )
+        ),
+      );
   }
 
-  Widget botonRegister(){
+  Widget botonCreate(){
     return Center(
       child: ElevatedButton(
         onPressed:()
-        {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context)=> RegisterPage()
-            )
-            
-          );
+        { 
+          if((passConfirmController.text.compareTo(passController.text)==0)&&userController.text.trim().isNotEmpty){
+            Navigator.pop(context);
+          }
           
-          //print("Pulsado");
+          //print("Pulsado"); //Una chuletilla
           //print(controlador1.text);
           //print(controlador2.text);
           //print(grupo_radio1.toString());
@@ -210,11 +194,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     Icons.person_add,
                     size: 20,
                   ),
-                  Text("Crear una cuenta")
+                  Text("Crear cuenta")
                 ]
             )
         )
       ),
     );
   }
-} 
+
+  Widget textoCabecera(String texto, double ancho){
+    return Container(
+      width: ancho,
+      child: Center(child: Text(texto, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+    );
+  }
+}  

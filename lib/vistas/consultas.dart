@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -77,7 +77,7 @@ class _ConsultScreenState extends State<ConsultScreen> {
                     ),
                     child: DropdownButton<String>( //Este widget seria el desplegable
                       dropdownColor: Colors.grey.shade900,
-                      hint: Text("Selecciona la el nombre", style: TextStyle(color: Colors.white),),
+                      hint: Text("Selecciona el nombre", style: TextStyle(color: Colors.white),),
                       isExpanded: true,
                       value: dropdownName,
                       icon: const Icon(Icons.arrow_drop_down),
