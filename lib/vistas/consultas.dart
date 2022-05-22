@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, avoid_print
+// ignore_for_file: prefer_const_constructors, avoid_print, sized_box_for_whitespace
 
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -92,7 +92,7 @@ class _ConsultScreenState extends State<ConsultScreen> {
                           dropdownName = newValue!;
                         });
                       },
-                      items: <String>['Un nombre', 'Dos nombres', 'Tres nombres', 'Cuatrooooooo nombres'] //Aqui se guardan los items del desplegable
+                      items: <String>['Vintash', 'La Tentación', 'La Farandula', 'Cuatrooooooo nombres'] //Aqui se guardan los items del desplegable
                           .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                           value: value,
@@ -107,6 +107,7 @@ class _ConsultScreenState extends State<ConsultScreen> {
                 Container(
                   color: Colors.black12,
                   child: TableCalendar(
+                    //locale:'es_SP',
                     focusedDay: diaEnfocado,
                     firstDay: DateTime(1000),
                     lastDay: DateTime(9999),
@@ -125,6 +126,15 @@ class _ConsultScreenState extends State<ConsultScreen> {
                       print(diaEnfocado); //Guia para saber si los datos pulsados son correctos
                     },
                     calendarStyle: CalendarStyle( //Con calendarStyle podemos modificar como queremos que se vea el calendario
+                      outsideTextStyle: TextStyle(
+                        color: Colors.grey
+                      ),
+                      defaultTextStyle: TextStyle(
+                        color: Colors.white
+                      ),
+                      weekendTextStyle: TextStyle(
+                        color: Colors.yellowAccent.shade700
+                      ),
                       isTodayHighlighted: true,
                       selectedDecoration: BoxDecoration( //Definimos como queremos que se vea el dia que se seleccione
                         color: Colors.yellowAccent.shade700,
@@ -134,7 +144,7 @@ class _ConsultScreenState extends State<ConsultScreen> {
                         color: Colors.black
                       ),
                       todayDecoration: BoxDecoration( //Definimos como queremos que se vea el dia actual
-                        color: Color(0x44000000),
+                        color: Colors.black54,
                         shape: BoxShape.circle
                       )
                     ),

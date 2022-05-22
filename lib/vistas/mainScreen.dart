@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, file_names
 
 import 'package:event_search/vistas/consultas.dart';
 import 'package:event_search/vistas/profile.dart';
@@ -36,7 +36,7 @@ class _MainPageState extends State<MainPage> {
         },
         currentIndex: paginaEnUso, //Definimos el indice actual para poder cambiar de pagina
         items: [ //Declaramos los objetos que queremos que aparezcan debajo
-          BottomNavigationBarItem(icon: Icon(Icons.home),label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.search),label: "Consultar"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil")
         ],
       ),

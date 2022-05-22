@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_import
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_import, sized_box_for_whitespace
 
 import 'package:flutter/material.dart';
 import 'package:event_search/vistas/login.dart';
@@ -26,6 +26,9 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
 
+  TextEditingController nameController = TextEditingController();
+  TextEditingController surNameController = TextEditingController();
+  TextEditingController secondSurNameController = TextEditingController();
   TextEditingController userController = TextEditingController();
   TextEditingController passController = TextEditingController();
   TextEditingController passConfirmController = TextEditingController();
@@ -41,10 +44,16 @@ class _RegisterPageState extends State<RegisterPage> {
         child: ListView(
           children:[
             Padding(
-              padding: const EdgeInsets.only(top: 300.0),
+              padding: const EdgeInsets.only(top: 100.0, bottom: 100.0),
               child: Wrap(
                 runSpacing: 10,
                 children: [
+                  textoCabecera("Introduzca su nombre:", MediaQuery.of(context).size.width),
+                  textName(),
+                  textoCabecera("Introduzca su primer apellido:", MediaQuery.of(context).size.width),
+                  textSurName(),
+                  textoCabecera("Introduzca su segundo apellido:", MediaQuery.of(context).size.width),
+                  textSecondSurName(),
                   textoCabecera("Escriba un nombre de usuario:", MediaQuery.of(context).size.width),
                   textUser(),
                   textoCabecera("Escriba su contraseña:", MediaQuery.of(context).size.width),
@@ -59,6 +68,105 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
+  }
+
+  Widget textName() {
+    return
+      Center(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Color(0x44000000),//color transparente
+            border: Border.all(color: Colors.white),
+            borderRadius: BorderRadius.all(Radius.circular(10.0))
+          ),
+          width: 250.0,
+          child:
+          TextField(
+            controller: nameController,
+            //autofocus: true, //Lo comentamos porque no queremos que se haga el focus al arrancar ejecutar la app
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.send,  // icono del botón
+            autocorrect: true,
+            textAlign: TextAlign.center,
+            obscureText: false, // password
+            style: TextStyle(
+                color: Colors.white
+            ),
+            decoration: InputDecoration(
+              //icon: Icon(Icons.three_g_mobiledata_outlined),
+              prefixIcon: Icon(Icons.person_outline, color: Colors.grey,),
+              hintText: "Nombre",
+              hintStyle:TextStyle(color: Colors.grey),
+            ),
+          )
+        ),
+      );
+  }
+
+  Widget textSurName() {
+    return
+      Center(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Color(0x44000000),//color transparente
+            border: Border.all(color: Colors.white),
+            borderRadius: BorderRadius.all(Radius.circular(10.0))
+          ),
+          width: 250.0,
+          child:
+          TextField(
+            controller: surNameController,
+            //autofocus: true, //Lo comentamos porque no queremos que se haga el focus al arrancar ejecutar la app
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.send,  // icono del botón
+            autocorrect: true,
+            textAlign: TextAlign.center,
+            obscureText: false, // password
+            style: TextStyle(
+                color: Colors.white
+            ),
+            decoration: InputDecoration(
+              //icon: Icon(Icons.three_g_mobiledata_outlined),
+              prefixIcon: Icon(Icons.person_outline, color: Colors.grey,),
+              hintText: "Apellido",
+              hintStyle:TextStyle(color: Colors.grey),
+            ),
+          )
+        ),
+      );
+  }
+
+  Widget textSecondSurName() {
+    return
+      Center(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Color(0x44000000),//color transparente
+            border: Border.all(color: Colors.white),
+            borderRadius: BorderRadius.all(Radius.circular(10.0))
+          ),
+          width: 250.0,
+          child:
+          TextField(
+            controller: secondSurNameController,
+            //autofocus: true, //Lo comentamos porque no queremos que se haga el focus al arrancar ejecutar la app
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.send,  // icono del botón
+            autocorrect: true,
+            textAlign: TextAlign.center,
+            obscureText: false, // password
+            style: TextStyle(
+                color: Colors.white
+            ),
+            decoration: InputDecoration(
+              //icon: Icon(Icons.three_g_mobiledata_outlined),
+              prefixIcon: Icon(Icons.person_outline, color: Colors.grey,),
+              hintText: "Segundo apellido",
+              hintStyle:TextStyle(color: Colors.grey),
+            ),
+          )
+        ),
+      );
   }
 
   Widget textUser() {
