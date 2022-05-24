@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, avoid_print, sized_box_for_whitespace
 
+import 'package:event_search/modelos/event.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -13,11 +14,22 @@ class ConsultScreen extends StatefulWidget {
 class _ConsultScreenState extends State<ConsultScreen> {
 
   //-------Declaracion de variables:
+  Map<DateTime, List<Event>> eventosSeleccionados ={};
   String? dropdownCategory;
   String? dropdownName;
   CalendarFormat format = CalendarFormat.month;
   DateTime diaSeleccionado = DateTime.now();
   DateTime diaEnfocado = DateTime.now();
+
+  @override
+  void initState() {
+    eventosSeleccionados = {};
+    super.initState();
+  }
+
+  List<Event> obtenerEventos(DateTime fecha){
+    return eventosSeleccionados[fecha] ?? [];
+  }
 
   //-------Codigo fuente:
   @override
@@ -125,6 +137,9 @@ class _ConsultScreenState extends State<ConsultScreen> {
                       });
                       print(diaEnfocado); //Guia para saber si los datos pulsados son correctos
                     },
+
+                    eventLoader: obtenerEventos,
+
                     calendarStyle: CalendarStyle( //Con calendarStyle podemos modificar como queremos que se vea el calendario
                       outsideTextStyle: TextStyle(
                         color: Colors.grey
@@ -152,6 +167,41 @@ class _ConsultScreenState extends State<ConsultScreen> {
                       return isSameDay(diaSeleccionado, fecha); //Con selectedDay, permitimos pinchar al usuario en cualquier fecha
                     },
                     headerStyle: HeaderStyle(formatButtonVisible: false, titleCentered: true), //Con headerStyle modificamos la cabecera del calendario
+                  ),
+                ),
+                ...obtenerEventos(diaSeleccionado).map((Event evento)=>ListTile(title: Text(evento.title))),
+                Center(
+                  child: ElevatedButton(
+                    onPressed:(){
+                      //print("Pulsado"); //Una chuletilla
+                      //print(controlador1.text);
+                      //print(controlador2.text);
+                      //print(grupo_radio1.toString());
+                      setState(() {
+                        
+                        //if(grupo_radio1.toString() == "1"){
+                        //  resultado = (int.parse(controlador1.text)+int.parse(controlador2.text));
+                        //}
+                      });
+
+                    },
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(Colors.yellow.shade700),
+                        maximumSize:
+                        MaterialStateProperty.all(const Size(250.0, 100.0))),
+                    child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              const Icon(
+                                Icons.add,
+                                size: 20,
+                              ),
+                              Text("Solicitar disponibilidad")
+                            ]
+                        )
+                    )
                   ),
                 )
               ]
