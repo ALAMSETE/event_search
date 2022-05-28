@@ -173,10 +173,13 @@ class _ConsultScreenState extends State<ConsultScreen> {
                 Center(
                   child: ElevatedButton(
                     onPressed:(){
-                      //print("Pulsado"); //Una chuletilla
-                      //print(controlador1.text);
-                      //print(controlador2.text);
-                      //print(grupo_radio1.toString());
+                      if(eventosSeleccionados[diaSeleccionado]!=null){
+                        eventosSeleccionados[diaSeleccionado]?.add(Event(title: "Titulo"));
+                      }
+                      else{
+                        eventosSeleccionados[diaSeleccionado] = [Event(title: "Titulo evento")];
+                      }
+                      
                       setState(() {
                         
                         //if(grupo_radio1.toString() == "1"){
