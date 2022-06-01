@@ -1,7 +1,12 @@
 
 class Event{
-  final String title;
-  Event({required this.title});
+  final String idCalendario;
+  final DateTime fecha;
+  Event({required this.idCalendario, required this.fecha});
 
-  String toString() => this.title;
+  String toString() => this.idCalendario;
+
+  Map<String, dynamic> toMap(){
+    return {'idCalendario':idCalendario, 'Fecha': fecha};
+  }
 }

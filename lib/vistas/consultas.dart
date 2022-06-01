@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, avoid_print, sized_box_for_whitespace
+// ignore_for_file: prefer_const_constructors, avoid_print, sized_box_for_whitespace, prefer_const_literals_to_create_immutables
 
 import 'package:event_search/modelos/event.dart';
 import 'package:flutter/material.dart';
@@ -169,15 +169,15 @@ class _ConsultScreenState extends State<ConsultScreen> {
                     headerStyle: HeaderStyle(formatButtonVisible: false, titleCentered: true), //Con headerStyle modificamos la cabecera del calendario
                   ),
                 ),
-                ...obtenerEventos(diaSeleccionado).map((Event evento)=>ListTile(title: Text(evento.title))),
+                ...obtenerEventos(diaSeleccionado).map((Event evento)=>ListTile(title: Text(evento.idCalendario))),
                 Center(
                   child: ElevatedButton(
                     onPressed:(){
                       if(eventosSeleccionados[diaSeleccionado]!=null){
-                        eventosSeleccionados[diaSeleccionado]?.add(Event(title: "Titulo"));
+                        eventosSeleccionados[diaSeleccionado]?.add(Event(idCalendario: "VINTASH", fecha: diaEnfocado));
                       }
                       else{
-                        eventosSeleccionados[diaSeleccionado] = [Event(title: "Titulo evento")];
+                        eventosSeleccionados[diaSeleccionado] = [Event( idCalendario: "VINTASH", fecha: diaEnfocado)];
                       }
                       
                       setState(() {
