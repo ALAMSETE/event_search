@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:event_search/controlador/conexion.dart';
 import 'package:event_search/vistas/mainScreen.dart';
 import 'package:event_search/vistas/register.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  final Conexion conexion = Conexion();
   TextEditingController userController = TextEditingController();
   TextEditingController passController = TextEditingController();
 
@@ -87,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
             decoration: InputDecoration(
               //icon: Icon(Icons.three_g_mobiledata_outlined),
               prefixIcon: Icon(Icons.person_outline, color: Colors.grey,),
-              hintText: "Usuario",
+              hintText: "DNI",
               hintStyle:TextStyle(color: Colors.grey),
             ),
           )
@@ -132,13 +134,18 @@ class _MyHomePageState extends State<MyHomePage> {
     return Center(
       child: ElevatedButton(
         onPressed:()
-        {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context)=> MainPage()
-            )
-            
-          );
+        async {
+          bool inicio = await conexion.canLogin(userController.text.toString().trim(), passController.text.toString().trim());
+          if(userController.text.toString().trim().isNotEmpty&&passController.text.toString().trim().isNotEmpty&&inicio){
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context)=> MainPage()
+              )
+            );
+          }else{
+            print("Error de inicio de sesion");
+          }
+          
           
           //print("Pulsado"); //Una chuletilla
           //print(controlador1.text);

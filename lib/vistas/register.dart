@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:event_search/vistas/login.dart';
+import 'package:event_search/modelos/usuarios.dart';
+import 'package:event_search/controlador/conexion.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -26,12 +28,15 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
 
+  final Conexion conexion = Conexion();
+
   TextEditingController nameController = TextEditingController();
   TextEditingController surNameController = TextEditingController();
-  TextEditingController secondSurNameController = TextEditingController();
-  TextEditingController userController = TextEditingController();
+  TextEditingController dniController = TextEditingController();
+  TextEditingController telController = TextEditingController();
   TextEditingController passController = TextEditingController();
   TextEditingController passConfirmController = TextEditingController();
+  Usuario user = Usuario();
 
   @override
   Widget build(BuildContext context) {
@@ -50,12 +55,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 children: [
                   textoCabecera("Introduzca su nombre:", MediaQuery.of(context).size.width),
                   textName(),
-                  textoCabecera("Introduzca su primer apellido:", MediaQuery.of(context).size.width),
+                  textoCabecera("Introduzca sus apellidos:", MediaQuery.of(context).size.width),
                   textSurName(),
-                  textoCabecera("Introduzca su segundo apellido:", MediaQuery.of(context).size.width),
-                  textSecondSurName(),
-                  textoCabecera("Escriba un nombre de usuario:", MediaQuery.of(context).size.width),
+                  textoCabecera("Escriba su DNI:", MediaQuery.of(context).size.width),
                   textUser(),
+                  textoCabecera("Escriba su número de telefono:", MediaQuery.of(context).size.width),
+                  textTelefono(),
                   textoCabecera("Escriba su contraseña:", MediaQuery.of(context).size.width),
                   textPass(),
                   textoCabecera("Repita de nuevo la contraseña:", MediaQuery.of(context).size.width),
@@ -136,39 +141,6 @@ class _RegisterPageState extends State<RegisterPage> {
       );
   }
 
-  Widget textSecondSurName() {
-    return
-      Center(
-        child: Container(
-          decoration: BoxDecoration(
-            color: Color(0x44000000),//color transparente
-            border: Border.all(color: Colors.white),
-            borderRadius: BorderRadius.all(Radius.circular(10.0))
-          ),
-          width: 250.0,
-          child:
-          TextField(
-            controller: secondSurNameController,
-            //autofocus: true, //Lo comentamos porque no queremos que se haga el focus al arrancar ejecutar la app
-            keyboardType: TextInputType.name,
-            textInputAction: TextInputAction.send,  // icono del botón
-            autocorrect: true,
-            textAlign: TextAlign.center,
-            obscureText: false, // password
-            style: TextStyle(
-                color: Colors.white
-            ),
-            decoration: InputDecoration(
-              //icon: Icon(Icons.three_g_mobiledata_outlined),
-              prefixIcon: Icon(Icons.person_outline, color: Colors.grey,),
-              hintText: "Segundo apellido",
-              hintStyle:TextStyle(color: Colors.grey),
-            ),
-          )
-        ),
-      );
-  }
-
   Widget textUser() {
     return
       Center(
@@ -181,7 +153,7 @@ class _RegisterPageState extends State<RegisterPage> {
           width: 250.0,
           child:
           TextField(
-            controller: userController,
+            controller: dniController,
             //autofocus: true, //Lo comentamos porque no queremos que se haga el focus al arrancar ejecutar la app
             keyboardType: TextInputType.name,
             textInputAction: TextInputAction.send,  // icono del botón
@@ -194,7 +166,40 @@ class _RegisterPageState extends State<RegisterPage> {
             decoration: InputDecoration(
               //icon: Icon(Icons.three_g_mobiledata_outlined),
               prefixIcon: Icon(Icons.person_outline, color: Colors.grey,),
-              hintText: "Usuario",
+              hintText: "DNI",
+              hintStyle:TextStyle(color: Colors.grey),
+            ),
+          )
+        ),
+      );
+  }
+
+  Widget textTelefono() {
+    return
+      Center(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Color(0x44000000),//color transparente
+            border: Border.all(color: Colors.white),
+            borderRadius: BorderRadius.all(Radius.circular(10.0))
+          ),
+          width: 250.0,
+          child:
+          TextField(
+            controller: telController,
+            //autofocus: true, //Lo comentamos porque no queremos que se haga el focus al arrancar ejecutar la app
+            keyboardType: TextInputType.phone,
+            textInputAction: TextInputAction.send,  // icono del botón
+            autocorrect: true,
+            textAlign: TextAlign.center,
+            obscureText: false, // password
+            style: TextStyle(
+                color: Colors.white
+            ),
+            decoration: InputDecoration(
+              //icon: Icon(Icons.three_g_mobiledata_outlined),
+              prefixIcon: Icon(Icons.phone, color: Colors.grey,),
+              hintText: "Telefono",
               hintStyle:TextStyle(color: Colors.grey),
             ),
           )
@@ -271,21 +276,55 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget botonCreate(){
     return Center(
       child: ElevatedButton(
-        onPressed:()
+        onPressed:() async
         { 
-          if((passConfirmController.text.compareTo(passController.text)==0)&&userController.text.trim().isNotEmpty){
+          if((passConfirmController.text.compareTo(passController.text)==0)&&dniController.text.trim().isNotEmpty){
+            print(dniController.text);
+            user.dni = dniController.text.toString().trim();
+            user.nombre = nameController.text.toString().trim();
+            user.apellidos = surNameController.text.toString().trim();
+            user.contrasenia = passController.text.toString().trim();
+            user.telefono = telController.text.toString().trim();
+
+            bool insert = await conexion.insertUsuario(user).catchError(
+                (error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.red,
+                      content: Row(
+                        children: const [
+                          Icon(
+                            Icons.wifi_off_rounded,
+                            size: 40,
+                            color: Colors.white,
+                          ),
+                          Expanded(
+                            child: Text(
+                              'No se pudo establecer conexión con el servidor.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: const BorderSide(color: Colors.white)),
+                      margin: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).size.height - 100,
+                          right: 20,
+                          left: 20),
+                    ),
+                  );
+                },
+              );
+
             Navigator.pop(context);
           }
           
-          //print("Pulsado"); //Una chuletilla
-          //print(controlador1.text);
-          //print(controlador2.text);
-          //print(grupo_radio1.toString());
           setState(() {
             
-            //if(grupo_radio1.toString() == "1"){
-            //  resultado = (int.parse(controlador1.text)+int.parse(controlador2.text));
-            //}
           });
 
         },

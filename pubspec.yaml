@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   table_calendar: ^3.0.5 #Libreria encargada del calendario
   sqflite: ^2.0.0+3 #Libreria encargada de la base de datos sqlite
+  http: ^0.13.4
 
 dev_dependencies:
   flutter_test:
