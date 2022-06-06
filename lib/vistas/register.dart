@@ -289,32 +289,29 @@ class _RegisterPageState extends State<RegisterPage> {
             bool insert = await conexion.insertUsuario(user).catchError(
                 (error) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      backgroundColor: Colors.red,
-                      content: Row(
-                        children: const [
-                          Icon(
-                            Icons.wifi_off_rounded,
-                            size: 40,
-                            color: Colors.white,
-                          ),
+                  SnackBar( //Definimos el snackbar
+                    backgroundColor: Colors.yellow[700],
+                    content: Row(
+                      children: const [
+                        Icon(
+                          Icons.error_outline,
+                          size: 40,
+                          color: Colors.white,
+                         ),
                           Expanded(
                             child: Text(
-                              'No se pudo establecer conexión con el servidor.',
+                              'Ha ocurrido un error.',
                               textAlign: TextAlign.center,
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                         ],
                       ),
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: const BorderSide(color: Colors.white)),
+                      behavior: SnackBarBehavior.floating, //Definimos como queremos que se comporte y localice
                       margin: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).size.height - 100,
-                          right: 20,
-                          left: 20),
+                        bottom: MediaQuery.of(context).size.height - 100,
+                        right: 20,
+                        left: 20),
                     ),
                   );
                 },

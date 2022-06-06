@@ -55,7 +55,7 @@ class Conexion {
         '"&telefono="'+
         usuario.telefono.toString()+
         '"';
-        print("url: "+url);
+        //print("url: "+url);
     http.Response response = await http.get(Uri.parse(url));
     if (response.statusCode == 200 &&
         response.body.toString().trim().isNotEmpty) {
@@ -63,6 +63,24 @@ class Conexion {
     } else {
       return false;
     }
+  }
+
+  Future<List<String>> getEventos() async {
+    HttpOverrides.global = MyHttpOverrides();
+    var url = domain+'selectEvento.php';
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    List<String> result = [];
+
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      for(var nomOrquesta in data){
+        result.add(nomOrquesta['nomEvento']);
+      }
+    }
+
+    return result;
   }
 
   //Obtiene los datos de un hermano mediante su dni

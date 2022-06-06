@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, avoid_print, sized_box_for_whitespace, prefer_const_literals_to_create_immutables
 
+import 'package:event_search/controlador/conexion.dart';
 import 'package:event_search/modelos/event.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -14,9 +15,12 @@ class ConsultScreen extends StatefulWidget {
 class _ConsultScreenState extends State<ConsultScreen> {
 
   //-------Declaracion de variables:
+  List<String> nombreEvento = [];
   Map<DateTime, List<Event>> eventosSeleccionados ={};
-  String? dropdownCategory;
   String? dropdownName;
+  String? nomEvento;
+  String? tipo;
+  var nombres = [];
   CalendarFormat format = CalendarFormat.month;
   DateTime diaSeleccionado = DateTime.now();
   DateTime diaEnfocado = DateTime.now();
@@ -25,6 +29,10 @@ class _ConsultScreenState extends State<ConsultScreen> {
   void initState() {
     eventosSeleccionados = {};
     super.initState();
+    Conexion conexion = Conexion();
+    conexion.getEventos().then((value){
+        nombreEvento.addAll(value);
+    });
   }
 
   List<Event> obtenerEventos(DateTime fecha){
@@ -35,49 +43,15 @@ class _ConsultScreenState extends State<ConsultScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Colors.black87,
+      backgroundColor: Colors.black87,
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
         child: ListView(
           children: [
             Wrap(
               runSpacing: 15,
               children: [
-                textoCabecera("Elige la categoria sobre la que quiere realizar la consulta", MediaQuery.of(context).size.width),
-                //--------- Menu desplegable encargado de las categorias de la empresa
-                Center(
-                  child: Container(
-                    width: MediaQuery.of(context).size.width-10,
-                    decoration: BoxDecoration(
-                      color: Color(0x44000000),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: DropdownButton<String>(
-                      dropdownColor: Colors.grey.shade900,
-                      hint: Text("Selecciona la categoría", style: TextStyle(color: Colors.white),),
-                      isExpanded: true,
-                      value: dropdownCategory,
-                      icon: const Icon(Icons.arrow_drop_down),
-                      elevation: 16,
-                      style: const TextStyle(color: Colors.white),
-                      underline: Container(
-                        height: 2,
-                        color: Colors.yellowAccent.shade700,
-                      ),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          dropdownCategory = newValue!;
-                        });
-                      },
-                      items: <String>['Uno', 'Dos', 'Tres', 'Cuatrooooooo']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ),
-                  )
-                ), 
+                
                 textoCabecera("Elige el nombre sobre el que quiere realizar la consulta:", MediaQuery.of(context).size.width),
                 //------- Menu desplegable para nombres de las empresas
                 Center(
@@ -99,12 +73,15 @@ class _ConsultScreenState extends State<ConsultScreen> {
                         height: 2,
                         color: Colors.yellowAccent.shade700,
                       ),
-                      onChanged: (String? newValue) {
+                      onChanged: (String? nuevoValor) {
                         setState(() {
-                          dropdownName = newValue!;
+                          nombres = nuevoValor!.split(",");
+                          tipo=nombres[1].toString().trim();
+                          nomEvento = nombres[0].toString().trim();
+                          dropdownName = nuevoValor;
                         });
                       },
-                      items: <String>['Vintash', 'La Tentación', 'La Farandula', 'Cuatrooooooo nombres'] //Aqui se guardan los items del desplegable
+                      items: nombreEvento //Aqui se guardan los items del desplegable
                           .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                           value: value,
@@ -114,12 +91,12 @@ class _ConsultScreenState extends State<ConsultScreen> {
                     ),
                   )
                 ),
-                nombreTitular(dropdownName),
+                nombreTitular(nomEvento),
                 //-----Container que contendra el calendario
                 Container(
                   color: Colors.black12,
                   child: TableCalendar(
-                    //locale:'es_SP',
+                    //locale:'es_ES',
                     focusedDay: diaEnfocado,
                     firstDay: DateTime(1000),
                     lastDay: DateTime(9999),
@@ -138,7 +115,7 @@ class _ConsultScreenState extends State<ConsultScreen> {
                       print(diaEnfocado); //Guia para saber si los datos pulsados son correctos
                     },
 
-                    eventLoader: obtenerEventos,
+                    eventLoader: obtenerEventos, //Con este eventLoader, almacenamos temporalmente los eventos que añadimos
 
                     calendarStyle: CalendarStyle( //Con calendarStyle podemos modificar como queremos que se vea el calendario
                       outsideTextStyle: TextStyle(
@@ -148,6 +125,9 @@ class _ConsultScreenState extends State<ConsultScreen> {
                         color: Colors.white
                       ),
                       weekendTextStyle: TextStyle(
+                        color: Colors.yellowAccent.shade700
+                      ),
+                      withinRangeTextStyle: TextStyle(
                         color: Colors.yellowAccent.shade700
                       ),
                       isTodayHighlighted: true,
@@ -166,25 +146,27 @@ class _ConsultScreenState extends State<ConsultScreen> {
                     selectedDayPredicate: (DateTime fecha){
                       return isSameDay(diaSeleccionado, fecha); //Con selectedDay, permitimos pinchar al usuario en cualquier fecha
                     },
-                    headerStyle: HeaderStyle(formatButtonVisible: false, titleCentered: true), //Con headerStyle modificamos la cabecera del calendario
+                    headerStyle: HeaderStyle( //Con headerStyle modificamos la cabecera del calendario
+                      formatButtonVisible: false,
+                      titleCentered: true,
+                      titleTextStyle: TextStyle(
+                        color: Colors.yellowAccent.shade700
+                      ),
+                    ), 
                   ),
                 ),
                 ...obtenerEventos(diaSeleccionado).map((Event evento)=>ListTile(title: Text(evento.idCalendario))),
                 Center(
                   child: ElevatedButton(
                     onPressed:(){
+                      //print(diaSeleccionado);
                       if(eventosSeleccionados[diaSeleccionado]!=null){
                         eventosSeleccionados[diaSeleccionado]?.add(Event(idCalendario: "VINTASH", fecha: diaEnfocado));
                       }
                       else{
                         eventosSeleccionados[diaSeleccionado] = [Event( idCalendario: "VINTASH", fecha: diaEnfocado)];
                       }
-                      
                       setState(() {
-                        
-                        //if(grupo_radio1.toString() == "1"){
-                        //  resultado = (int.parse(controlador1.text)+int.parse(controlador2.text));
-                        //}
                       });
 
                     },
