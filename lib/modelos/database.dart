@@ -36,7 +36,8 @@ class BaseDatos{
     final List<Map<String, dynamic>> eventosMap = await database.query("CALENDARIO");
     return List.generate(eventosMap.length, (i) => Event(
       idCalendario: eventosMap[i]['idCalendario'],
-      fecha: eventosMap[i]['fecha']
+      fecha: eventosMap[i]['fecha'],
+      localidad: eventosMap[i]['nomLocalidad']
     ));
   }
 }

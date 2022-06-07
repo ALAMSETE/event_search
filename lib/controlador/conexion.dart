@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:event_search/modelos/event.dart';
 import 'package:http/http.dart' as http;
 import 'package:event_search/modelos/usuarios.dart';
 
@@ -65,6 +66,26 @@ class Conexion {
     }
   }
 
+  Future<bool> insertCalendario(Event evento) async {
+    HttpOverrides.global = MyHttpOverrides();
+    String url = domain +
+        'insertCalendario.php?idCalendario="' +
+        evento.idCalendario.toString() +
+        '"&fechaEvento="' +
+        evento.fecha.toString() +
+        '"&nomLocalidad="' +
+        evento.localidad.toString()+
+        '"';
+        print("url: "+url);
+    http.Response response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200 &&
+        response.body.toString().trim().isNotEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<List<String>> getEventos() async {
     HttpOverrides.global = MyHttpOverrides();
     var url = domain+'selectEvento.php';
@@ -77,6 +98,24 @@ class Conexion {
       var data = json.decode(response.body);
       for(var nomOrquesta in data){
         result.add(nomOrquesta['nomEvento']);
+      }
+    }
+
+    return result;
+  }
+
+  Future<List<String>> getLocalidades() async {
+    HttpOverrides.global = MyHttpOverrides();
+    var url = domain+'selectLocalidad.php';
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    List<String> result = [];
+
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      for(var nomLocalidad in data){
+        result.add(nomLocalidad['nomLocalidad']);
       }
     }
 
