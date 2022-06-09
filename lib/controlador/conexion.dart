@@ -122,8 +122,24 @@ class Conexion {
     return result;
   }
 
+  Future<bool> updateUserNom(String nombre, String dni) async {
+    HttpOverrides.global = MyHttpOverrides();
+    String url = domain +
+        'updateUserNom.php?nombre="' +
+        nombre +
+        '"&dni="' +
+        dni+
+        "'";
+    http.Response response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200 &&
+        response.body.toString().trim().isNotEmpty) {
+      return true;
+    }
+    return false;
+  }
+  
   //Obtiene los datos de un hermano mediante su dni
-  /*Future<Usuario> getHermano(String dni) async {
+  Future<Usuario> getUsuario(String dni) async {
     HttpOverrides.global = MyHttpOverrides();
     Uri url = Uri.parse(domain + 'selectUsuario.php?dni=' + dni);
 
@@ -141,7 +157,7 @@ class Conexion {
   }
 
   //Ejecuta la consulta encargada de modificar los datos de un 'hermano'
-  Future<bool> updateHermano(Usuario usuario) async {
+  /*Future<bool> updateHermano(Usuario usuario) async {
     HttpOverrides.global = MyHttpOverrides();
     String url = domain +
         'updateUsuario.php?idHermano="' +

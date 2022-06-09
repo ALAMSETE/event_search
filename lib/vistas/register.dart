@@ -72,6 +72,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ] 
         ),
       ),
+      floatingActionButton: buildNavigateButton(),
     );
   }
 
@@ -352,4 +353,12 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Center(child: Text(texto, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
     );
   }
+
+  Widget buildNavigateButton()=> FloatingActionButton(
+    child: Icon(Icons.arrow_back),
+    backgroundColor: Colors.yellow.shade700,
+    onPressed: (){
+      Navigator.pop(context);
+    },
+  );
 }  
