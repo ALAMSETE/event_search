@@ -26,8 +26,12 @@ class Conexion {
   //Comprueba si las credenciales del usuario son correctas
   Future<bool> canLogin(String dni, String contrasenia) async {
     HttpOverrides.global = MyHttpOverrides();
-    String url =
-        domain + "selectLogin.php?dni='" + dni + "'&contrasenia='" + contrasenia + "'";
+    String url = domain +
+        "selectLogin.php?dni='" +
+        dni +
+        "'&contrasenia='" +
+        contrasenia +
+        "'";
 
     http.Response response = await http.get(Uri.parse(url));
 
@@ -53,10 +57,10 @@ class Conexion {
         usuario.dni.toString() +
         '"&contrasenia="' +
         usuario.contrasenia.toString() +
-        '"&telefono="'+
-        usuario.telefono.toString()+
+        '"&telefono="' +
+        usuario.telefono.toString() +
         '"';
-        //print("url: "+url);
+    //print("url: "+url);
     http.Response response = await http.get(Uri.parse(url));
     if (response.statusCode == 200 &&
         response.body.toString().trim().isNotEmpty) {
@@ -74,9 +78,10 @@ class Conexion {
         '"&fechaEvento="' +
         evento.fecha.toString() +
         '"&nomLocalidad="' +
-        evento.localidad.toString()+
+        evento.localidad.toString() +
+        '"&dniRes="' +
+        evento.dniRes.toString() +
         '"';
-        print("url: "+url);
     http.Response response = await http.get(Uri.parse(url));
     if (response.statusCode == 200 &&
         response.body.toString().trim().isNotEmpty) {
@@ -88,7 +93,7 @@ class Conexion {
 
   Future<List<String>> getEventos() async {
     HttpOverrides.global = MyHttpOverrides();
-    var url = domain+'selectEvento.php';
+    var url = domain + 'selectEvento.php';
 
     http.Response response = await http.get(Uri.parse(url));
 
@@ -96,7 +101,7 @@ class Conexion {
 
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
-      for(var nomOrquesta in data){
+      for (var nomOrquesta in data) {
         result.add(nomOrquesta['nomEvento']);
       }
     }
@@ -106,7 +111,7 @@ class Conexion {
 
   Future<List<String>> getLocalidades() async {
     HttpOverrides.global = MyHttpOverrides();
-    var url = domain+'selectLocalidad.php';
+    var url = domain + 'selectLocalidad.php';
 
     http.Response response = await http.get(Uri.parse(url));
 
@@ -114,7 +119,7 @@ class Conexion {
 
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
-      for(var nomLocalidad in data){
+      for (var nomLocalidad in data) {
         result.add(nomLocalidad['nomLocalidad']);
       }
     }
@@ -124,12 +129,8 @@ class Conexion {
 
   Future<bool> updateUserNom(String nombre, String dni) async {
     HttpOverrides.global = MyHttpOverrides();
-    String url = domain +
-        'updateUserNom.php?nombre="' +
-        nombre +
-        '"&dni="' +
-        dni+
-        "'";
+    String url =
+        domain + 'updateUserNom.php?nombre="' + nombre + '"&dni="' + dni + "'";
     http.Response response = await http.get(Uri.parse(url));
     if (response.statusCode == 200 &&
         response.body.toString().trim().isNotEmpty) {
@@ -137,22 +138,35 @@ class Conexion {
     }
     return false;
   }
-  
+
+  Future<bool> updateUserApell(String nombre, String dni) async {
+    HttpOverrides.global = MyHttpOverrides();
+    String url =
+        domain + 'updateUserNom.php?nombre="' + nombre + '"&dni="' + dni + "'";
+    http.Response response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200 &&
+        response.body.toString().trim().isNotEmpty) {
+      return true;
+    }
+    return false;
+  }
+
   //Obtiene los datos de un hermano mediante su dni
   Future<Usuario> getUsuario(String dni) async {
     HttpOverrides.global = MyHttpOverrides();
     Uri url = Uri.parse(domain + 'selectUsuario.php?dni=' + dni);
-
     http.Response response = await http.get(url);
     Usuario usuario = Usuario();
+
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
-      usuario.dni = data[0]['dni'];
-      usuario.nombre = data[0]['nombre'];
-      usuario.apellidos = data[0]['apellidos'];
-      usuario.contrasenia = data[0]['contrasenia'];
-      usuario.telefono = data[0]['telefono'];
+      usuario.dni = data[0]['dni'].toString();
+      usuario.nombre = data[0]['nombre'].toString();
+      usuario.apellidos = data[0]['apellidos'].toString();
+      usuario.contrasenia = data[0]['contrasenia'].toString();
+      usuario.telefono = data[0]['telefono'].toString();
     }
+    
     return usuario;
   }
 

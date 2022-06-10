@@ -280,7 +280,6 @@ class _RegisterPageState extends State<RegisterPage> {
         onPressed:() async
         { 
           if((passConfirmController.text.compareTo(passController.text)==0)&&dniController.text.trim().isNotEmpty){
-            print(dniController.text);
             user.dni = dniController.text.toString().trim();
             user.nombre = nameController.text.toString().trim();
             user.apellidos = surNameController.text.toString().trim();

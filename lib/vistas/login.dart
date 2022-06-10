@@ -47,10 +47,15 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView(
           children:[
             Padding(
-              padding: const EdgeInsets.only(top: 375.0),
+              padding: const EdgeInsets.only(top: 150.0, bottom: 50.0),
               child: Wrap(
                 runSpacing: 10,
                 children: [
+                  Center(
+                    child: Image.asset(
+                    'assets/vintash.png',
+                    width: 150,
+                  )),
                   textUser(),
                   textPass(),
                   botonLogin(),
@@ -139,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if(userController.text.toString().trim().isNotEmpty&&passController.text.toString().trim().isNotEmpty&&inicio){ // y que los campos no esten vacios
             Navigator.of(context).push( //Si todo es correcto continuamos a la apliacion
               MaterialPageRoute(
-                builder: (context)=> MainPage()
+                builder: (context)=> MainPage(userController.text.toString())
               )
             );
           }else{ //Si no lo es mostramos un snackbar informativo

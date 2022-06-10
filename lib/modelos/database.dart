@@ -22,7 +22,7 @@ class BaseDatos{
 
   static Future<Future<int>> insertar(Event evento) async{
     Database database = await abrirDB();
-    var resultado = await database.rawInsert("INSERT INTO CALENDARIO (idCalendario, fecha, nomLocalidad) VALUES (${evento.idCalendario}, ${evento.fecha}, 'Granada')");
+   await database.rawInsert("INSERT INTO CALENDARIO (idCalendario, fecha, nomLocalidad) VALUES (${evento.idCalendario}, ${evento.fecha}, 'Granada')");
     return database.insert("CALENDARIO", evento.toMap());
   }
 
@@ -37,7 +37,8 @@ class BaseDatos{
     return List.generate(eventosMap.length, (i) => Event(
       idCalendario: eventosMap[i]['idCalendario'],
       fecha: eventosMap[i]['fecha'],
-      localidad: eventosMap[i]['nomLocalidad']
+      localidad: eventosMap[i]['nomLocalidad'],
+      dniRes: eventosMap[i]['dniRes']
     ));
   }
 }
