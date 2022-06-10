@@ -37,6 +37,8 @@ dependencies:
   table_calendar: ^3.0.5 #Libreria encargada del calendario
   sqflite: ^2.0.0+3 #Libreria encargada de la base de datos sqlite
   http: ^0.13.4 #Libreria encargada de la conexión a internet
+  connectivity_plus: ^1.0.6 #Para comprobar la conexion
+
 
 dev_dependencies:
   flutter_test:

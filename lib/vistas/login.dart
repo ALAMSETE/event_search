@@ -175,17 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             );
           }
-          
-          
-          //print("Pulsado"); //Una chuletilla
-          //print(controlador1.text);
-          //print(controlador2.text);
-          //print(grupo_radio1.toString());
           setState(() {
-            
-            //if(grupo_radio1.toString() == "1"){
-            //  resultado = (int.parse(controlador1.text)+int.parse(controlador2.text));
-            //}
           });
 
         },
@@ -221,16 +211,7 @@ class _MyHomePageState extends State<MyHomePage> {
             )
             
           );
-          
-          //print("Pulsado");
-          //print(controlador1.text);
-          //print(controlador2.text);
-          //print(grupo_radio1.toString());
           setState(() {
-            
-            //if(grupo_radio1.toString() == "1"){
-            //  resultado = (int.parse(controlador1.text)+int.parse(controlador2.text));
-            //}
           });
 
         },

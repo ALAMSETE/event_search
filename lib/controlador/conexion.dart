@@ -7,22 +7,6 @@ import 'package:event_search/modelos/usuarios.dart';
 class Conexion {
   final String domain = 'http://iesayala.ddns.net/alamsete/';
 
-  //Este método es el encargado de cargar las procesiones
-  /*Future<List<Procesion>> getProcesiones() async {
-    HttpOverrides.global = MyHttpOverrides();
-
-    String url = domain + 'selectCofradias.php';
-
-    http.Response response = await http.get(Uri.parse(url));
-    late List<Procesion> procesionesList;
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-      procesionesList =
-          data.map<Procesion>((e) => Procesion.fromJson(e)).toList();
-    }
-    return procesionesList;
-  }*/
-
   //Comprueba si las credenciales del usuario son correctas
   Future<bool> canLogin(String dni, String contrasenia) async {
     HttpOverrides.global = MyHttpOverrides();
@@ -109,6 +93,7 @@ class Conexion {
     return result;
   }
 
+  // Metodo que se encarga de obtener de las localidades de la base de datos externa
   Future<List<String>> getLocalidades() async {
     HttpOverrides.global = MyHttpOverrides();
     var url = domain + 'selectLocalidad.php';
@@ -127,10 +112,11 @@ class Conexion {
     return result;
   }
 
+  // Metodo que se encarga de realizar una actualización del nombre del usuario de la base de datos externa
   Future<bool> updateUserNom(String nombre, String dni) async {
     HttpOverrides.global = MyHttpOverrides();
     String url =
-        domain + 'updateUserNom.php?nombre="' + nombre + '"&dni="' + dni + "'";
+        domain + 'updateUserNom.php?nombre="' + nombre + '"&dni="' + dni + '"';
     http.Response response = await http.get(Uri.parse(url));
     if (response.statusCode == 200 &&
         response.body.toString().trim().isNotEmpty) {
@@ -139,10 +125,24 @@ class Conexion {
     return false;
   }
 
-  Future<bool> updateUserApell(String nombre, String dni) async {
+  // Metodo que se encarga de realizar una actualización de los apellidos del usuario de la base de datos externa
+  Future<bool> updateUserApell(String apellidos, String dni) async {
     HttpOverrides.global = MyHttpOverrides();
     String url =
-        domain + 'updateUserNom.php?nombre="' + nombre + '"&dni="' + dni + "'";
+        domain + 'updateUserApell.php?apellidos="' + apellidos + '"&dni="' + dni + '"';
+    http.Response response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200 &&
+        response.body.toString().trim().isNotEmpty) {
+      return true;
+    }
+    return false;
+  }
+
+  // Metodo que se encarga de realizar una actualización del telfono del usuario de la base de datos externa
+  Future<bool> updateUserTel(String telefono, String dni) async {
+    HttpOverrides.global = MyHttpOverrides();
+    String url =
+        domain + 'updateUserTel.php?telefono="' + telefono + '"&dni="' + dni + '"';
     http.Response response = await http.get(Uri.parse(url));
     if (response.statusCode == 200 &&
         response.body.toString().trim().isNotEmpty) {
@@ -169,80 +169,9 @@ class Conexion {
     
     return usuario;
   }
-
-  //Ejecuta la consulta encargada de modificar los datos de un 'hermano'
-  /*Future<bool> updateHermano(Usuario usuario) async {
-    HttpOverrides.global = MyHttpOverrides();
-    String url = domain +
-        'updateUsuario.php?idHermano="' +
-        usuario.idHermano.toString() +
-        '"&nombre="' +
-        usuario.nombre.toString() +
-        '"&apellidos="' +
-        usuario.apellidos.toString() +
-        '"&dni="' +
-        usuario.dni.toString() +
-        '"&password="' +
-        usuario.password.toString() +
-        '"&telefono=' +
-        usuario.telefono.toString();
-    http.Response response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200 &&
-        response.body.toString().trim().isNotEmpty) {
-      return true;
-    }
-    return false;
-  }
-
-  //Ejecuta la consulta encargada de eliminar un 'hermano'
-  Future<bool> deleteHermano(Hermano hermano) async {
-    HttpOverrides.global = MyHttpOverrides();
-    String url =
-        domain + 'deleteHermano.php?idHermano=' + hermano.idHermano.toString();
-    http.Response response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200 &&
-        response.body.toString().trim().isNotEmpty) {
-      return true;
-    }
-    return false;
-  }
-
-  //Obtiene los datos necesario para generar un QR con los datos
-  //del idHermano indicado
-  Future<Qr> getQr(String idHermano) async {
-    HttpOverrides.global = MyHttpOverrides();
-    Uri url = Uri.parse(domain + 'selectQr.php?idHermano=' + idHermano);
-    http.Response response = await http.get(url);
-    Qr qrCode = Qr();
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-      qrCode.usuario = data[0]['usuario'];
-      qrCode.cofradia = data[0]['cofradia'];
-      qrCode.antiguedad = data[0]['antiguedad'];
-      qrCode.posicion = data[0]['posicion'];
-      qrCode.fecha = data[0]['fecha'];
-    }
-    return qrCode;
-  }
-
-  //Obtiene la localización actual de la cofradía
-  Future<List<String>> getLocationProcesion(String idCofradia) async {
-    HttpOverrides.global = MyHttpOverrides();
-    Uri url = Uri.parse(
-        domain + 'selectLocationCofradia.php?idCofradia=' + idCofradia);
-    http.Response response = await http.get(url);
-    List<String> localizacion = [];
-
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-      localizacion.add(data[0]['altitud']);
-      localizacion.add(data[0]['latitud']);
-    }
-    return localizacion;
-  }*/
 }
 
-//Clase necesaria para generar las consutas a la base de datos debido a que la conexion no esta certificada, por lo que debemos
+//Clase necesaria para generar las consutas a la base de datos ya que la conexion no es "segura"
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {

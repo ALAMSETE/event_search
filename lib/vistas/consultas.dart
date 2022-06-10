@@ -253,12 +253,6 @@ class _ConsultScreenState extends State<ConsultScreen> {
                                     print(evento.dniRes);
                                     Conexion conexion = Conexion();
                                     conexion.insertCalendario(evento);
-                                    /*if(eventosSeleccionados[diaSeleccionado]!=null){
-                                eventosSeleccionados[diaSeleccionado]?.add(Event(idCalendario: nomEvento!+" - "+dropdownLocalidad!, fecha: diaEnfocado, localidad: dropdownLocalidad!));
-                              }
-                              else{
-                                eventosSeleccionados[diaSeleccionado] = [Event( idCalendario: nomEvento!+" "+dropdownLocalidad!, fecha: diaEnfocado, localidad: dropdownLocalidad!)];
-                              }*/
                                     Navigator.pop(context);
                                   })
                             ],

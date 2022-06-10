@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:event_search/controlador/conexion.dart';
+import 'package:event_search/modelos/event.dart';
+import 'package:event_search/modelos/usuarios.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -15,20 +17,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late String dni;
   Conexion conexion = Conexion();
 
-  @override
-  initState() {
-    super.initState();
-    dni = widget.dni;
-  }
+  Usuario user = Usuario();
+  var misEventos = [];
 
   TextEditingController controllerNombre = TextEditingController();
   TextEditingController controllerApellido = TextEditingController();
   TextEditingController controllerPhone = TextEditingController();
 
   @override
+  initState() {
+    super.initState();
+    dni = widget.dni;
+    getUser();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: 
+      Container(
         color: Colors.black87,
         child: ListView(children: [
           Padding(
@@ -52,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        textUser("Escriba aqui su nuevo nombre"),
+                        textUser(),
                         botonNombre()
                       ],
                     ),
@@ -69,7 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        textApellido("Esribe tus nuevos apellidos"),
+                        textApellido(),
                         botonApellido()
                       ],
                     ),
@@ -87,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        textPhone("Escriba su nuevo número"),
+                        textPhone(),
                         botonNumTelefono()
                       ],
                     ),
@@ -124,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget textUser(String nombre) {
+  Widget textUser() {
     return Center(
       child: Container(
           decoration: BoxDecoration(
@@ -144,14 +151,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             decoration: InputDecoration(
               //icon: Icon(Icons.three_g_mobiledata_outlined),
               //prefixIcon: Icon(Icons.person_outline, color: Colors.grey,),
-              hintText: nombre,
+              hintText: "Nuevo nombre. Ej: "+user.nombre!,
               hintStyle: TextStyle(color: Colors.grey),
             ),
           )),
     );
   }
 
-  Widget textApellido(String apellido) {
+  Widget textApellido() {
     return Center(
       child: Container(
           decoration: BoxDecoration(
@@ -171,14 +178,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             decoration: InputDecoration(
               //icon: Icon(Icons.three_g_mobiledata_outlined),
               //prefixIcon: Icon(Icons.person_outline, color: Colors.grey,),
-              hintText: apellido,
+              hintText: "Nuevos apellidos. Ej: "+user.apellidos!,
               hintStyle: TextStyle(color: Colors.grey),
             ),
           )),
     );
   }
 
-  Widget textPhone(String hint) {
+  Widget textPhone() {
     return Center(
       child: Container(
           decoration: BoxDecoration(
@@ -198,20 +205,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
             decoration: InputDecoration(
               //icon: Icon(Icons.three_g_mobiledata_outlined),
               //prefixIcon: Icon(Icons.person_outline, color: Colors.grey,),
-              hintText: hint,
+              hintText: "Nuevo telefono. Ej: "+user.telefono!,
               hintStyle: TextStyle(color: Colors.grey),
             ),
           )),
     );
   }
 
-  Widget botonNombre() {
+  Widget botonNombre() { //Boton para modificar el nombre
     return Center(
       child: ElevatedButton(
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.yellow.shade700),
           ),
-          onPressed: () async => showDialog(
+          onPressed: () async => showDialog( //Si le damos al boton nos muestra un alertdialog para confirmar la consulta
               context: context,
               builder: (context) => AlertDialog(
                     backgroundColor: Colors.black54,
@@ -222,37 +229,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     actions: [
                       TextButton(
                           child:
-                              Text("No", style: TextStyle(color: Colors.white)),
+                              Text("No", style: TextStyle(color: Colors.white)), //Si le damos a no se cierra el alerdialog y cancela la consulta
                           onPressed: () => Navigator.pop(context)),
                       TextButton(
                           child:
-                              Text("Si", style: TextStyle(color: Colors.white)),
+                              Text("Si", style: TextStyle(color: Colors.white)), //Si le damos a que si se lleva a cabo la consulta
                           onPressed: () {
-                            //conexion.updateUserNom(controllerNombre.text.toString().trim(), dni);
+                            conexion.updateUserNom(
+                                controllerNombre.text.toString().trim(),
+                                user.dni.toString());
                             Navigator.pop(context);
                           })
                     ],
                   )),
-          child: Padding(
+          child: Padding( //Le añadimos un padding al icono
               padding: const EdgeInsets.all(10.0),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    const Icon(
-                      Icons.edit,
-                      size: 20,
-                    ),
-                  ]))),
+              child: const Icon(
+                Icons.edit,
+                size: 20,
+              ))),
     );
   }
 
-  Widget botonApellido() {
+  Widget botonApellido() { //Boton para modificar los apellidos
     return Center(
       child: ElevatedButton(
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.yellow.shade700),
           ),
-          onPressed: () async => showDialog(
+          onPressed: () async => showDialog( //Si le damos al boton nos muestra un alertdialog para confirmar la consulta
               context: context,
               builder: (context) => AlertDialog(
                     backgroundColor: Colors.black54,
@@ -263,37 +268,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     actions: [
                       TextButton(
                           child:
-                              Text("No", style: TextStyle(color: Colors.white)),
+                              Text("No", style: TextStyle(color: Colors.white)), //Si le damos a no se cierra el alerdialog y cancela la consulta
                           onPressed: () => Navigator.pop(context)),
                       TextButton(
                           child:
-                              Text("Si", style: TextStyle(color: Colors.white)),
+                              Text("Si", style: TextStyle(color: Colors.white)), //Si le damos a que si se lleva a cabo la consulta
                           onPressed: () {
-                            //conexion.insertCalendario(evento);
+                            conexion.updateUserApell(
+                                controllerApellido.text.toString().trim(),
+                                user.dni.toString());
                             Navigator.pop(context);
                           })
                     ],
                   )),
-          child: Padding(
+          child: Padding( //Le añadimos un padding al icono
               padding: const EdgeInsets.all(10.0),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    const Icon(
-                      Icons.edit,
-                      size: 20,
-                    ),
-                  ]))),
+              child: const Icon( 
+                Icons.edit,
+                size: 20,
+              ))),
     );
   }
 
-  Widget botonNumTelefono() {
+  Widget botonNumTelefono() { //Boton para modificar el telefono
     return Center(
       child: ElevatedButton(
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.yellow.shade700),
           ),
-          onPressed: () async => showDialog(
+          onPressed: () async => showDialog( //Si le damos al boton nos muestra un alertdialog para confirmar la consulta
               context: context,
               builder: (context) => AlertDialog(
                     backgroundColor: Colors.black54,
@@ -304,27 +307,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     actions: [
                       TextButton(
                           child:
-                              Text("No", style: TextStyle(color: Colors.white)),
+                              Text("No", style: TextStyle(color: Colors.white)), //Si le damos a no se cierra el alerdialog y cancela la consulta
                           onPressed: () => Navigator.pop(context)),
                       TextButton(
                           child:
-                              Text("Si", style: TextStyle(color: Colors.white)),
+                              Text("Si", style: TextStyle(color: Colors.white)), //Si le damos a que si se lleva a cabo la consulta
                           onPressed: () {
-                            //conexion.insertCalendario(evento);
+                            conexion.updateUserTel(
+                                controllerPhone.text.toString().trim(),
+                                user.dni.toString());
                             Navigator.pop(context);
                           })
                     ],
                   )),
-          child: Padding(
+          child: Padding( //Le añadimos un padding al icono
               padding: const EdgeInsets.all(10.0),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    const Icon(
-                      Icons.edit,
-                      size: 20,
-                    ),
-                  ]))),
+              child: const Icon(
+                Icons.edit,
+                size: 20,
+              ))),
     );
   }
+
+  getUser() async {
+    await conexion.getUsuario(dni).then((value) {
+      setState(() {
+        user.nombre = value.nombre;
+        user.apellidos = value.apellidos;
+        user.dni = value.dni;
+        user.contrasenia = value.contrasenia;
+        user.telefono = value.telefono;
+      });
+    });
+  }
+  
 }
