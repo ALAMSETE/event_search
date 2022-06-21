@@ -4,7 +4,7 @@ import 'package:event_search/controlador/conexion.dart';
 import 'package:event_search/vistas/mainScreen.dart';
 import 'package:event_search/vistas/register.dart';
 import 'package:flutter/material.dart';
-
+import 'package:connectivity_plus/connectivity_plus.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -140,32 +140,26 @@ class _MyHomePageState extends State<MyHomePage> {
       child: ElevatedButton(
         onPressed:()
         async { //tenemos que declarar este boton asincrono ya que va a realizar una conexion a la base de datos.
-          bool inicio = await conexion.canLogin(userController.text.toString().trim(), passController.text.toString().trim()); //comprobamos que el usuario existe
-          if(userController.text.toString().trim().isNotEmpty&&passController.text.toString().trim().isNotEmpty&&inicio){ // y que los campos no esten vacios
-            Navigator.of(context).push( //Si todo es correcto continuamos a la apliacion
-              MaterialPageRoute(
-                builder: (context)=> MainPage(userController.text.toString())
-              )
-            );
-          }else{ //Si no lo es mostramos un snackbar informativo
+          var conex = await Connectivity().checkConnectivity();
+          if(conex == ConnectivityResult.none){//Si no tiene conexion a internet accedemos a la base de datos local
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar( //Definimos el snackbar
-              backgroundColor: Colors.yellow[700],
-              content: Row(
-                children: const [
-                  Icon(
-                    Icons.error_outline,
-                    size: 40,
-                    color: Colors.white,
-                   ),
-                    Expanded(
-                      child: Text(
-                        'Error al iniciar sesión. Compruebe que los datos son correctos.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                backgroundColor: Colors.redAccent[700],
+                content: Row(
+                  children: const [
+                    Icon(
+                      Icons.wifi_off,
+                      size: 40,
+                      color: Colors.white,
+                     ),
+                      Expanded(
+                        child: Text(
+                          'No puedes iniciar sesión sin conexión a Internet.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
                 ),
                 behavior: SnackBarBehavior.floating, //Definimos como queremos que se comporte y localice
                 margin: EdgeInsets.only(
@@ -175,6 +169,43 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             );
           }
+          else{//Si tiene algun tipo de conexion accedemos a la BD externa
+            bool inicio = await conexion.canLogin(userController.text.toString().trim(), passController.text.toString().trim()); //comprobamos que el usuario existe
+            if(userController.text.toString().trim().isNotEmpty&&passController.text.toString().trim().isNotEmpty&&inicio){ // y que los campos no esten vacios
+              Navigator.of(context).push( //Si todo es correcto continuamos a la apliacion
+                MaterialPageRoute(
+                  builder: (context)=> MainPage(userController.text.toString())
+                )
+              );
+            }else{ //Si no lo es mostramos un snackbar informativo
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar( //Definimos el snackbar
+                backgroundColor: Colors.yellow[700],
+                content: Row(
+                  children: const [
+                    Icon(
+                      Icons.error_outline,
+                      size: 40,
+                      color: Colors.white,
+                     ),
+                      Expanded(
+                        child: Text(
+                          'Error al iniciar sesión. Compruebe que los datos son correctos.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                  behavior: SnackBarBehavior.floating, //Definimos como queremos que se comporte y localice
+                  margin: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).size.height - 100,
+                    right: 20,
+                    left: 20),
+                ),
+              );
+            }
+          }  
           setState(() {
           });
 
@@ -199,7 +230,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
+  //Nos creamos un boton para realizar el registro
   Widget botonRegister(){
     return Center(
       child: ElevatedButton(

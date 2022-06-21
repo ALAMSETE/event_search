@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_import, sized_box_for_whitespace
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:event_search/vistas/login.dart';
 import 'package:event_search/modelos/usuarios.dart';
@@ -279,49 +280,109 @@ class _RegisterPageState extends State<RegisterPage> {
       child: ElevatedButton(
         onPressed:() async
         { 
-          if((passConfirmController.text.compareTo(passController.text)==0)&&dniController.text.trim().isNotEmpty){
-            user.dni = dniController.text.toString().trim();
-            user.nombre = nameController.text.toString().trim();
-            user.apellidos = surNameController.text.toString().trim();
-            user.contrasenia = passController.text.toString().trim();
-            user.telefono = telController.text.toString().trim();
-
-            bool insert = await conexion.insertUsuario(user).catchError(
-                (error) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar( //Definimos el snackbar
-                    backgroundColor: Colors.yellow[700],
-                    content: Row(
-                      children: const [
-                        Icon(
-                          Icons.error_outline,
-                          size: 40,
-                          color: Colors.white,
-                         ),
-                          Expanded(
-                            child: Text(
-                              'Ha ocurrido un error.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                      ),
-                      behavior: SnackBarBehavior.floating, //Definimos como queremos que se comporte y localice
-                      margin: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).size.height - 100,
-                        right: 20,
-                        left: 20),
+          var conex = await Connectivity().checkConnectivity();
+          if(conex == ConnectivityResult.none){ //Comprobamos si disponemos de conexion a internet
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar( //Definimos el snackbar
+                backgroundColor: Colors.redAccent[700],
+                content: Row(
+                children: const [
+                  Icon(
+                    Icons.wifi_off,
+                    size: 40,
+                    color: Colors.white,
+                  ),
+                  Expanded(
+                    child: Text(
+                      'No puedes registrarte sin conexión a Internet.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                  );
-                },
-              );
-
-            Navigator.pop(context);
+                  ),
+                ],
+                ),
+                behavior: SnackBarBehavior.floating, //Definimos como queremos que se comporte y localice
+                margin: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).size.height - 200,
+                  right: 20,
+                  left: 20),
+              ),
+            );
           }
-          
-          setState(() {
-            
+          else{ //Si tenemos conexion insertamos directamente en BD externa
+            if((passConfirmController.text.trim().compareTo(passController.text.trim())==0)&&dniController.text.trim().isNotEmpty
+              &&nameController.text.trim().isNotEmpty
+              &&surNameController.text.trim().isNotEmpty
+              &&telController.text.trim().isNotEmpty
+              ){
+              user.dni = dniController.text.toString().trim();
+              user.nombre = nameController.text.toString().trim();
+              user.apellidos = surNameController.text.toString().trim();
+              user.contrasenia = passController.text.toString().trim();
+              user.telefono = telController.text.toString().trim();
+
+              await conexion.insertUsuario(user).catchError(
+                  (error) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar( //Definimos el snackbar
+                      backgroundColor: Colors.yellow[700],
+                      content: Row(
+                        children: const [
+                          Icon(
+                            Icons.error_outline,
+                            size: 40,
+                            color: Colors.white,
+                           ),
+                            Expanded(
+                              child: Text(
+                                'Ha ocurrido un error.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                        behavior: SnackBarBehavior.floating, //Definimos como queremos que se comporte y localice
+                        margin: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).size.height - 100,
+                          right: 20,
+                          left: 20),
+                      ),
+                    );
+                  },
+                );
+              Navigator.pop(context);
+            }
+            else{
+              ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar( //Definimos el snackbar
+                backgroundColor: Colors.redAccent[700],
+                content: Row(
+                children: const [
+                  Icon(
+                    Icons.error,
+                    size: 40,
+                    color: Colors.white,
+                  ),
+                  Expanded(
+                    child: Text(
+                      'Todos los campos deben estar rellenos.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+                ),
+                behavior: SnackBarBehavior.floating, //Definimos como queremos que se comporte y localice
+                margin: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).size.height - 200,
+                  right: 20,
+                  left: 20),
+              ),
+            );
+            }
+          }
+          setState(() {  
           });
 
         },
@@ -346,6 +407,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  // Definimos un widget para no tener que repetir mucho codigo
   Widget textoCabecera(String texto, double ancho){
     return Container(
       width: ancho,
@@ -353,6 +415,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  //Nos creamos un boton para volver a la pantalla anterior
   Widget buildNavigateButton()=> FloatingActionButton(
     child: Icon(Icons.arrow_back),
     backgroundColor: Colors.yellow.shade700,

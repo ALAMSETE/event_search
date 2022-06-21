@@ -28,6 +28,43 @@ class Conexion {
     return false;
   }
 
+  //Con este metodo comprobamos si el dia en el que queremos reservar esta ocupado o no
+  Future<bool> canInsert(String fecha, String idCalendario) async {
+    HttpOverrides.global = MyHttpOverrides();
+    String url = domain +
+        "selectCalendario.php?fechaEvento='" +
+        fecha +
+        "'&idCalendario='" +
+        idCalendario +
+        "'";
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      if (data[0]['ocupado'] == '0') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  //Con este metodo obtendremos los eventos que hemos reservado
+  Future<List<Event>> getMisEventos(String dni) async {
+    HttpOverrides.global = MyHttpOverrides();
+
+    String url = domain + 'selectMisEventos.php?dniRes="'+dni+'"';
+
+    http.Response response = await http.get(Uri.parse(url));
+    late List<Event> listaMisEventos;
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      listaMisEventos =
+          data.map<Event>((e) => Event.fromJson(e)).toList();
+    }
+    return listaMisEventos;
+  }
+
   //Ejecuta la consuta necesaria para dar de alta un usuario, pasandole
   //por parametros un objeto 'usuario'
   Future<bool> insertUsuario(Usuario usuario) async {
@@ -169,6 +206,23 @@ class Conexion {
     
     return usuario;
   }
+
+  //Este método es el encargado de cargar las procesiones
+  Future<List<Event>> getProcesiones() async {
+    HttpOverrides.global = MyHttpOverrides();
+
+    String url = domain + 'selectCofradias.php';
+
+    http.Response response = await http.get(Uri.parse(url));
+    late List<Event> procesionesList;
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      procesionesList =
+          data.map<Event>((e) => Event.fromJson(e)).toList();
+    }
+    return procesionesList;
+  }
+
 }
 
 //Clase necesaria para generar las consutas a la base de datos ya que la conexion no es "segura"

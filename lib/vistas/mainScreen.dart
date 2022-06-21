@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, file_names
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, file_names, must_be_immutable
 
 import 'package:event_search/vistas/consultas.dart';
 import 'package:event_search/vistas/profile.dart';
@@ -12,7 +12,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  late String dni;
+  String dni='';
 
   int paginaEnUso = 0;
 

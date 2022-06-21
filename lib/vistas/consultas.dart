@@ -1,11 +1,11 @@
-// ignore_for_file: prefer_const_constructors, avoid_print, sized_box_for_whitespace, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, avoid_print, sized_box_for_whitespace, prefer_const_literals_to_create_immutables, must_be_immutable
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:event_search/controlador/conexion.dart';
 import 'package:event_search/modelos/event.dart';
 import 'package:event_search/modelos/usuarios.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:intl/intl.dart';
 
 class ConsultScreen extends StatefulWidget {
   ConsultScreen(this.dni, {Key? key}) : super(key: key);
@@ -95,7 +95,7 @@ class _ConsultScreenState extends State<ConsultScreen> {
                 ),
                 onChanged: (String? nuevoValor) {
                   setState(() {
-                    dropdownLocalidad = nuevoValor;
+                    dropdownLocalidad = nuevoValor!;
                   });
                 },
                 items:
@@ -178,8 +178,6 @@ class _ConsultScreenState extends State<ConsultScreen> {
                     diaSeleccionado = diaSelected;
                     diaEnfocado = diaFocus;
                   });
-                  print(
-                      diaEnfocado); //Guia para saber si los datos pulsados son correctos
                 },
 
                 eventLoader:
@@ -220,59 +218,178 @@ class _ConsultScreenState extends State<ConsultScreen> {
               ),
             ),
             ...obtenerEventos(diaSeleccionado).map(
-                (Event evento) => ListTile(title: Text(evento.idCalendario))),
+                (Event evento) => ListTile(title: Text(evento.idCalendario!))),
             Center(
               child: ElevatedButton(
-                  onPressed: () async => showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            backgroundColor: Colors.black54,
-                            title: Text("Añadir evento",
-                                style:
-                                    TextStyle(color: Colors.yellow.shade700)),
-                            content: Text("¿Quieres solicitar una reserva?",
-                                style: TextStyle(color: Colors.white)),
-                            actions: [
-                              TextButton(
-                                  child: Text("No",
-                                      style: TextStyle(color: Colors.white)),
-                                  onPressed: () => Navigator.pop(context)),
-                              TextButton(
-                                  child: Text("Si",
-                                      style: TextStyle(color: Colors.white)),
-                                  onPressed: () {
-                                    print(diaEnfocado
-                                        .toString()
-                                        .split(" ")[0]
-                                        .toString().trim());
-                                    Event evento = Event(
-                                        idCalendario: nomEvento!,
-                                        fecha: diaEnfocado,
-                                        localidad: dropdownLocalidad!,
-                                        dniRes: user.dni!);
-                                    print(evento.dniRes);
-                                    Conexion conexion = Conexion();
-                                    conexion.insertCalendario(evento);
-                                    Navigator.pop(context);
-                                  })
-                            ],
-                          )),
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(Colors.yellow.shade700),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(250.0, 100.0))),
-                  child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            const Icon(
-                              Icons.add,
-                              size: 20,
-                            ),
-                            Text("Solicitar disponibilidad")
-                          ]))),
+                onPressed: () async => showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    backgroundColor: Colors.grey[850],
+                    title: Text("Añadir evento",
+                        style:
+                            TextStyle(color: Colors.yellow.shade700)),
+                    content: Text("¿Quieres realizar una reserva?",
+                        style: TextStyle(color: Colors.white)),
+                    actions: [
+                      TextButton(
+                          child: Text("No",
+                              style: TextStyle(color: Colors.white)),
+                          onPressed: () => Navigator.pop(context)),
+                      TextButton(
+                          child: Text("Si",
+                              style: TextStyle(color: Colors.white)),
+                          onPressed: () async {
+                            if(dropdownName!=null&&dropdownLocalidad!=null){
+                              var conex = await Connectivity().checkConnectivity();
+                              if(conex == ConnectivityResult.none){
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar( //Definimos el snackbar
+                                  backgroundColor: Colors.redAccent[700],
+                                  content: Row(
+                                    children: const [
+                                      Icon(
+                                        Icons.wifi_off,
+                                        size: 40,
+                                        color: Colors.white,
+                                      ),
+                                        Expanded(
+                                          child: Text(
+                                            'No puedes realizar una reserva sin conexión a Internet.',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    behavior: SnackBarBehavior.floating, //Definimos como queremos que se comporte y localice
+                                    margin: EdgeInsets.only(
+                                      bottom: MediaQuery.of(context).size.height - 200,
+                                      right: 20,
+                                      left: 20),
+                                  ),
+                                );
+                              }
+                              else{
+                                Event evento = Event(
+                                    idCalendario: nomEvento,
+                                    fecha: diaEnfocado.toString().split(" ")[0].toString().trim(),
+                                    localidad: dropdownLocalidad,
+                                    dniRes: user.dni!);
+                                bool libre; // Creamos una variable con la que sabremos si el día esta ocupado o no
+                                Conexion conexion = Conexion();
+                                libre = await conexion.canInsert(evento.fecha.toString(), evento.idCalendario!);
+                                if(libre){ // Si esta libre... (No tiene ninguna reserva ese dia)
+                                  conexion.insertCalendario(evento);
+                                  Navigator.pop(context);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar( //Definimos el snackbar
+                                    backgroundColor: Colors.greenAccent[700],
+                                    content: Row(
+                                      children: const [
+                                        Icon(
+                                          Icons.check,
+                                          size: 40,
+                                          color: Colors.white,
+                                        ),
+                                          Expanded(
+                                            child: Text(
+                                              'Reserva realizada con éxito.',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      behavior: SnackBarBehavior.floating, //Definimos como queremos que se comporte y localice
+                                      margin: EdgeInsets.only(
+                                        bottom: MediaQuery.of(context).size.height - 200,
+                                        right: 20,
+                                        left: 20),
+                                    ),
+                                  );
+                                }
+                                else{ //Si no esta libre...
+                                  Navigator.pop(context);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar( //Definimos el snackbar
+                                    backgroundColor: Colors.redAccent[700],
+                                    content: Row(
+                                      children: const [
+                                        Icon(
+                                          Icons.error,
+                                          size: 40,
+                                          color: Colors.white,
+                                        ),
+                                          Expanded(
+                                            child: Text(
+                                              'Este día esta ya reservado.',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      behavior: SnackBarBehavior.floating, //Definimos como queremos que se comporte y localice
+                                      margin: EdgeInsets.only(
+                                        bottom: MediaQuery.of(context).size.height - 200,
+                                        right: 20,
+                                        left: 20),
+                                    ),
+                                  );
+                                } 
+                              }
+                            }
+                            else{
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar( //Definimos el snackbar
+                                    backgroundColor: Colors.redAccent[700],
+                                    content: Row(
+                                      children: const [
+                                        Icon(
+                                          Icons.error,
+                                          size: 40,
+                                          color: Colors.white,
+                                        ),
+                                          Expanded(
+                                            child: Text(
+                                              'Debes seleccionar un nombre y localidad.',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      behavior: SnackBarBehavior.floating, //Definimos como queremos que se comporte y localice
+                                      margin: EdgeInsets.only(
+                                        bottom: MediaQuery.of(context).size.height - 200,
+                                        right: 20,
+                                        left: 20),
+                                    ),
+                                  );
+                            }
+                          })
+                    ],
+                  )),
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.yellow.shade700),
+                    maximumSize:
+                        MaterialStateProperty.all(const Size(250.0, 100.0))),
+                child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Icon(
+                          Icons.add,
+                          size: 20,
+                        ),
+                        Text("Realizar una reserva")
+                      ])
+                )
+              ),
             )
           ])
         ]),
@@ -281,6 +398,7 @@ class _ConsultScreenState extends State<ConsultScreen> {
   }
 }
 
+//Nos creamos un texto para la cabecera
 Widget textoCabecera(String text, double ancho) {
   return Container(
     width: ancho,
@@ -291,6 +409,7 @@ Widget textoCabecera(String text, double ancho) {
   );
 }
 
+//Nos creamos un texto para el titulo
 Widget nombreTitular(String? texto) {
   if (texto == null) {
     return Text("");
