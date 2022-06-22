@@ -345,8 +345,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   bottom: MediaQuery.of(context).size.height - 200,
                   right: 20,
                   left: 20),
-                  ),
-                );
+                 ),
+              );
 
               await conexion.insertUsuario(user).catchError(
                   (error) {
@@ -378,7 +378,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     );
                   },
                 );
-              Navigator.pop(context);
+              
             }
             else{
               ScaffoldMessenger.of(context).showSnackBar(
