@@ -333,7 +333,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     Expanded(
                       child: Text(
-                        'Nombre modificado.',
+                        'Usuario registrado correctamente.',
                         textAlign: TextAlign.center,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
