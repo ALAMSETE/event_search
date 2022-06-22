@@ -321,6 +321,33 @@ class _RegisterPageState extends State<RegisterPage> {
               user.contrasenia = passController.text.toString().trim();
               user.telefono = telController.text.toString().trim();
 
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar( //Definimos el snackbar
+                  backgroundColor: Colors.greenAccent[700],
+                  content: Row(
+                  children: const [
+                    Icon(
+                      Icons.check,
+                      size: 40,
+                      color: Colors.white,
+                    ),
+                    Expanded(
+                      child: Text(
+                        'Nombre modificado.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                  ),
+                  behavior: SnackBarBehavior.floating, //Definimos como queremos que se comporte y localice
+                  margin: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).size.height - 200,
+                  right: 20,
+                  left: 20),
+                  ),
+                );
+
               await conexion.insertUsuario(user).catchError(
                   (error) {
                     ScaffoldMessenger.of(context).showSnackBar(
