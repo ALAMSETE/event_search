@@ -90,7 +90,7 @@ class Conexion {
       return false;
     }
   }
-
+  // Con este metodo podemos insertar una reserva pasando como parametro un evento
   Future<bool> insertCalendario(Event evento) async {
     HttpOverrides.global = MyHttpOverrides();
     String url = domain +
@@ -111,7 +111,7 @@ class Conexion {
       return false;
     }
   }
-
+  //Con este metodo podemos obtener todos los eventos.
   Future<List<String>> getEventos() async {
     HttpOverrides.global = MyHttpOverrides();
     var url = domain + 'selectEvento.php';
